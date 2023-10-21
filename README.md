@@ -239,10 +239,11 @@ This is a design for evented assembly paired with my multithreaded barrier runti
 * High throughput between threads.
 * How much space do we allocate to a coroutine? **It depends how parallel it is.**
 * It handles observers.
-* This is the object hierarchy: we have mailboxes for threads, facts and coroutine objects.
+* This is the object hierarchy: we have mailboxes for threads, there are facts and there are coroutine objects.
 * Go language has moveable goroutines but we don't.
 * The only things written to a coroutine's mailbox are events that interest it.
 * A lot of the time, coroutines shall only be on one thread.
+* Either the thread has a mailbox and the thread routes data in a mailbox to a particular coroutine or each coroutine can own a mailbox, it depends on your memory requirements.
 
 ```
 fact-1
@@ -251,6 +252,8 @@ fact-2
 	coroutine-1
 	
 thread-1
+	runqueue-lower
+	runqueue-higher
 	coroutine-1
         mailbox-1
         mailbox-2
@@ -258,6 +261,8 @@ thread-1
         mailbox-4
         mailbox-5
 thread-2
+	runqueue-lower
+	runqueue-higher
 	coroutine-1
         mailbox-1
         mailbox-2
@@ -265,6 +270,8 @@ thread-2
         mailbox-4
         mailbox-5
 thread-3
+	runqueue-lower
+	runqueue-higher
 	coroutine-1
         mailbox-1
         mailbox-2
@@ -272,6 +279,8 @@ thread-3
         mailbox-4
         mailbox-5
 thread-4
+	runqueue-lower
+	runqueue-higher
 	coroutine-1
         mailbox-1
         mailbox-2
@@ -279,6 +288,8 @@ thread-4
         mailbox-4
         mailbox-5
 thread-5
+	runqueue-lower
+	runqueue-higher
 	coroutine-1
         mailbox-1
         mailbox-2
@@ -324,12 +335,14 @@ state1 = state2 | state3
 * Fire will have to insert into other threads.
 * For events that are parallelised we can do a replicated parallel (fork) which writes to multiple thread coroutines.
 * The coroutine writes its data into **X(%rdi)** higher buffer that it wants to share with other coroutines. This shall be exchanged at the next synchronization event by the multithreaded barrier.
-* The `fire` takes a fact, and some parameters and writes an **activation record** into triggered coroutine's (**higher**) input buffers, which is thread safe. And it adds the coroutine to the runqueue of a thread.
+* The `fire` takes a fact, and some parameters and writes an **activation record** into triggered coroutine's mailbox (**higher**) input buffers, which is thread safe. And it adds that coroutine to the **higher** runqueue of that coroutine's thread.
 * If the coroutine ALWAYS operates on the same thread, then it can reuse the same buffer and doesn't need to use `higher`.
 * Does the firing thread or the receiving thread check if event critieria is met?
 * Eager criteria checking or delayed criteria checking.
 * **Yield** decides which coroutine to activate based on a runqueue.
 * Each thread has its own runqueue which is double buffered.
+* Streamlining coroutines - if two coroutines directly talk to eachother, we can always run them sequentially and share buffers and avoid data moving.
+* The topology between coroutine is an API surface.
 
 A fact can be represented by a sequence of numbers
 
@@ -350,6 +363,8 @@ state2:
 * I think the coroutine must be called repeatedly with each mailbox to serve requests to it.
 
 ```
+fire:
+	mailbox[mailbox_count++] = activation_record;
 ```
 
 hash Join's for things that are moved?
@@ -368,7 +383,66 @@ state3:
 	
 ```
 
-Register clobbering and state?
+Register clobbering is fine, all local variables come from memory.
+
+
+
+```
+while running:
+	number = number + 1
+	fire numberadded
+	
+	
+# paralell-coroutine
+numberadder1:
+	movq 25(%rax), %r1
+	addq $1, %r1
+	movq 10(%rsi), %r2		# get the size
+	movq %r1, (%rsi,%r2,)	# move the item to be read by the next coroutine
+	movq %r1, 25(%rax)
+	yield
+	cmp $1, 20(%rax)
+	jz numberadder1
+
+# shared-register-coroutine
+# a coroutine that sends to another coroutine on the same thread
+# the source coroutine's local data is in %rdi and
+numberadder1:
+	movq 25(%rax), %r1
+	addq $1, %r1
+	yield
+	cmp $1, 20(%rax)
+	jz numberadder1
+	
+# this coroutine receives the data from the previous coroutine
+numberadder2:
+	movq 25(%rdi), %r1
+	addq $1, %r1
+	movq %r1, 25(%rdi)
+	yield
+	cmp $1, 20(%rax)
+	jz numberadder1
+	
+# merged-coroutine
+numberadder1:
+	movq 25(%rax), %r1		# from coroutine-1
+	addq $1, %r1			# from coroutine-1
+	addq $1, %r1			# from coroutine-2
+	yield
+	cmp $1, 20(%rax)
+	jz numberadder1
+
+numberadder1()
+numberadder2()
+numberadder3()
+
+```
+
+```
+numberadder1 | numberadder2 | numberadder3
+```
+
+
 
 Double buffering for source location and destination locations
 
@@ -392,7 +466,7 @@ stack relationships, you poke the rsp on the stack for restore?
 
 
 
-
+side: adding numbers to lots of numbers and see the shape of the coordinates it creates
 
 # 39. Serverless with simple code generation
 
@@ -404,7 +478,53 @@ stack relationships, you poke the rsp on the stack for restore?
 
 Handle all ingestion and logistics.
 
-# 43. Optimisation
+# 43. Optimisation in spare cycles
+
+# 44. Position tree
+
+Update position of sets of items
+
+# 45. Programming against behaviours
+
+# 46. Matrix translation fun GUI
+
+# 47. Traversal lines
+
+# 48. Insert into an access pattern
+
+# 49. Database engine traversals and logic and data flow and logistics and assembly number relationships
+
+# 50. Inflection towards on a graph and matrix multiplication
+
+# 51. Position and logistics is algebra
+
+# 52. Logistics grid
+
+Use SIMD and threads to search for location of items. Numbers can be subsets of eachother
+
+```
+If X == 1:
+	it's in collection 1
+
+if X == 2:
+	it's in collection 1 and 2
+```
+
+```
+samuel-squire	
+cat				
+phone			
+```
+
+Construct separate lists based on the number when scanning.
+
+Moving subsets of groups efficiently for reading and writing.
+
+# 53. Server event ingest
+
+# 54. Business fanout
+
+# 55. There's value in fast fanout
 
 
 
