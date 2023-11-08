@@ -468,9 +468,11 @@ stack relationships, you poke the rsp on the stack for restore?
 
 side: adding numbers to lots of numbers and see the shape of the coordinates it creates
 
+"sametime lists"
+
 # 39. Serverless with simple code generation
 
-# 40. Language semantics and the lack of reuseability
+# 40. Language semantics and the lack of reuseability of things written in Rust or C++
 
 # 41. Logistics of JSON data structures from APIs
 
@@ -488,7 +490,7 @@ Update position of sets of items
 
 # 46. Matrix translation fun GUI
 
-# 47. Traversal lines
+# 47. Traversal lines with stacks on them 
 
 # 48. Insert into an access pattern
 
@@ -526,11 +528,241 @@ Moving subsets of groups efficiently for reading and writing.
 
 # 55. There's value in fast fanout
 
+# 56. Membership in a collection: most frameworks are about "where" you arrange things
+
+# 57. Define the semantics you want
+
+# 58. Generate the output given a case, then infer the movements with a neural network?
+
+# 59. Paralellism thoughts
+
+* To fork and parallelise with low latency, you need a thread that is ready and spinning on an integer until it can continue. You also need a thread pool.
+* The multithreaded barrier enables high throughput and requires no locks but there is a high latency on synchronization.
+* Scale/fan out is interleaving and multiplexing.
+
+# 60. Buffer filling parallelism
+
+# 61. Alternating thread groups
+
+# 62. Sideways
+
+# 63. Latency and throughput
+
+
+
+# 64. Need log - FIFO stack
+
+
+
+# 65. Content addressed file systems and pointers
+
+This would be amazing. Everything would be O(1) lookup time.
+
+# 66. The Go Toolchain and A* and logistics
+
+Is not building software a traversal? How do you know something works with what you have?
+
+
+
+# 67. Preexecution
+
+# 68. Traversing lots of data in parallel
+
+# 69. Masking the future
+
+What can chess teach us about this?
+
+# 70. Language composition
+
+# 71. The GUI is just data
+
+# 72. How do you generalise a move
+
+The kernel for example, things are moving around.
+
+# 73. Tuples of thunderbird application
+
+# 74. Runpatterns
+
+can we change the Linux scheduler to run threads in a pattern?
+
+# 75. Latency is a product of how much work you have to do
+
+# 76. Number of state changes per second
+
+# 77. Surf cloud
+
+Create resources in clouds, with placeholder names. As-if
+
+# 78. Business process shop
+
+# 79. Designing a language with semantics , semantic editor
+
+# 80. Compact and equivalent traversals, traversal graphs
+
+Can a traversal be algebra and automatically deduced?, prexecution
+
+# 81. Communication editor and placeholders
+
+
+
+# 82. Maximum possible future
+
+# 83. Number lines
+
+Memory is billions of number lines. If you don't need to serialise a number line, to see it at a given position.
+
+1... 100
+
+1.. 100
+
+Each number line is an identity. Each number is a position. K nearest neighbours.
+
+If I have 4 number lines,
+
+Couldn't we create a lookup table of combinations that sum to 100?
+
+register programming, syscall for output
+
+# 84. Organisational software
+
+security
+
+# 85. Chunk stacks
+
+A browser is a chunk stack.
+
+# 86. Software URL
+
+handle versioning, migrations
+
+# 87. Parallel updated layers
+
+you can composite at the end
+
+# 88. Expressions work the same in most languages
+
+# 89. Immediate fire - communication is just memory
+
+In my disruptor and nonblocking barrier, the latency to handling a request is as low as 66 nanoseconds up to a few hundred nanoseconds. 
+
+If you want to interlock or send-and-reply, you're paying 66 nanoseconds each time.
+
+To interlock, you set a memory location and then update a field.
+
+```
+struct Thread {
+	int ready;
+}
+
+thread1:
+mov $2, %rbx
+mov $6, %rax
+mov %rax, b(dest) 		
+mov $1, (threads,%rbx)	# signal ready for consumption
+						# other thread can see a in ~100 nanoseconds		
+# can do things while other thread is doing things
+loop:
+cmp 
+
+
+thread2:
+wait:
+cmp $1, threads(dest)
+je receive
+jmp wait
+receive:
+mov a(dest), %rax
+add $1, %rax
+
+mov %rax, a(dest)
+mov $2, %rbx
+mov $1, (threads,%rbx)		# send data back
 
 
 
 
 
 
+```
+
+```
+
+```
+
+safe to only write from one thread
+
+# 90. Versions webpage
+
+parallel lines
+
+# 91. Semantics algebra
+
+# 92. Multiplexing semantics and algebra
+
+# 93. Synchronized turning and movement
+
+How do you move multiple things simultaneously to get an effect?
+
+# 94. Overlapping rectangles and the borrow checker
+
+# 95. "Self" can be the local variables and the stack
+
+# 96. N to N-1 many peers
+
+```
+```
+
+# 97. Cheap iterators or passing data between coroutines
+
+# 98. Placeholders for control flow mapped onto a grid - should do these things
+
+# 99. Parallelisation and serialised resources
+
+Route around resources.
+
+```
+Resource()
+```
+
+# 100. Signal animation
+
+We can think of an object orientated program as lines (wires) connecting pieces and then signals being sent down wires. This is in effect a protocol.
+
+# 101. Tail call optimisation generic AST pattern
 
 
+
+# 102. Parsing is dispatch
+
+# 103. Optional past window: structured interaction programming
+
+Events, interact.
+
+# 104. Numbers affecting numbers
+
+C Compiler
+
+# 105. Markup output: highlight and instantiate and connect
+
+Structs in assembly are moves into 0x18(%rbp)
+
+
+
+```
+    buffers[x].count = buffer_size;                                                                                                                   
+    5efb: 8b 85 14 fe ff ff     mov    -0x1ec(%rbp),%eax  # move x into %eax                                                                                       # sign extend
+    5f01: 48 98                 cltq                                                                                                                  
+    5f03: 48 c1 e0 04           shl    $0x4,%rax                                                                                                      
+    5f07: 48 89 c2              mov    %rax,%rdx         # rax is shifted by 4 in both rax and rdx                                                                                             
+    5f0a: 48 8b 85 00 ff ff ff  mov    -0x100(%rbp),%rax # overwrite rax with data from 0x100 (buffers)                                                                                            
+    5f11: 48 01 c2              add    %rax,%rdx         # add data from %rax to shifted left %rdx                                                                                             
+    5f14: 8b 85 8c fe ff ff     mov    -0x174(%rbp),%eax # move buffer_size into buffers[x].count                                                                                             
+    5f1a: 89 02                 mov    %eax,(%rdx)
+```
+
+
+
+# 106. Lockdown GUI
+
+# 107. Multiplexing CPU/Multiplexing IO
