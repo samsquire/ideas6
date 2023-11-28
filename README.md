@@ -692,6 +692,22 @@ mov $1, (threads,%rbx)		# send data back
 
 safe to only write from one thread
 
+how do you read a value that could be updated at any time? left-right concurrency control
+
+two event streams that can be interleaved arbitrarily
+
+```
+set x y
+publish x
+// x cannot be read by this thread anymore
+
+read x
+
+
+```
+
+
+
 # 90. Versions webpage
 
 parallel lines
@@ -766,3 +782,386 @@ Structs in assembly are moves into 0x18(%rbp)
 # 106. Lockdown GUI
 
 # 107. Multiplexing CPU/Multiplexing IO
+
+# 108. Transparent functions
+
+A function grouping can contain other function groupings. They're transparent white line diagrams.
+
+ dynamic reconfiguration
+
+# 109. Value grid
+
+# 110. Tablegrid - loose association
+
+value grid bullet pointed lists cross references 
+
+# 111. Type Teeth mesh
+
+Two or more types can intersect to form a cartesian product.
+
+# 112. Lots of different serial tasks
+
+What can a computer desktop environment provide that is useful to developers?
+
+* defragmentation
+* spell check
+* data organisation
+* indexing
+* cross referencing
+* simulation
+
+
+
+# 113. Scope is powerful
+
+Can be used for memory management
+
+# 114. Language sequences
+
+# 115. Sources and Sinks
+
+# 116. Fast compositing
+
+# 117. Message passing route to widget
+
+# 118. "When" is important
+
+# 119. Token boundary Mapping
+
+If I generate a text stream of tokens and there are boundaries of the tokens, I can work out how to produce which piece efficiently! for efficient refresh logic.
+generate schedules
+
+token boundaries are spans
+
+# 120. Endless HTML
+
+# 121. Recording spans as a language feature and repathing
+
+Find alternative journeys to get the same output.
+
+# 122. Placeholder token boundary mapping
+
+Generics
+
+# 123. You can have compile time performance for what would be a runtime elegance: Rubyisms
+
+Because at compile time you know the steps you need to take in the future.
+
+# 124. An event happens in another thread
+
+How do you react to an event that is happening in another thread, that you are interested in?
+
+* You can check for it when it is time to handle it. This is a "during" relation. Scope, span.
+* Thread safe way of checking for an event.
+
+
+
+```
+task (input_rb)
+	input_rb.check
+	
+```
+
+# 125. Channels have a scheduling cost
+
+How do you pass data between coroutines efficiently?
+
+```
+coroutine_1:
+emit <record>
+
+coroutine_2:
+consume <record>
+```
+
+You can inline the calls at the compiler level. For runtime coroutines
+
+```
+coroutine_1.dependents:
+coroutine_2
+
+coroutine_1:
+mov $1, dest(%rdi)
+yield
+
+coroutine_2:
+add $1, mine(%rdi)
+yield
+
+yield:
+jmp coroutine_1.dependents[coroutine_1.curdependent + 1 % dependents.size]
+
+```
+
+
+
+
+
+# 126. Dense meaningful keywords
+
+The sequence and combination of keywords should be enough to understand its meaning.
+
+# 127. Movement agents
+
+Model movement through assembly - units.
+
+Indirection is address calculation, addition
+
+# 128. LLM and next token prediction and Data flow
+
+# 129. Directed constraints/requirements
+
+On the way to fulfilling this goal, I want you to maintain these criterias.
+
+# 130. Multithreaded QUIC server
+
+# 131. Sametime directive
+
+```
+sametime(tcp-server cron-timer )
+	tcp-server cron-timer
+		x
+					x
+						
+```
+
+multiplexing coroutines
+
+generate a line separated schedule and the computer works out how to arrange code to generate it.
+
+```
+```
+
+
+
+# 132. Fast traversal of chunks
+
+a browser is essentially this.
+
+# 133. Semantics and ASTs everywhere
+
+# 134. Solve the mutable code problem
+
+how to upgrade systems
+
+# 135. Automatic route decomposition into AST
+
+Create a superobject with every piece of functionality in it, then extract its usages into subcomponents.
+
+# 136. REST APIs are too low level
+
+# 137. Traversal dispatch
+
+A traversal is a O complexity problem.
+
+# 138. Adaptive behaviour, thresholds
+
+such as JIT compiler compilation initiation
+
+# 139. The gridrel is the program's input
+
+Grid rel is the idealised efficient execution of something.
+
+
+
+# 140. Types are valuable things
+
+Type inference tries to hide types, but types are useful, they're what you have!
+
+Can use propositions and logical reasoning over types and traversals
+
+```
+after :wrt thing
+```
+
+if what you have is useful and what you can do with it, you can chain it together with something else like intellisense, the timeline and algorithm can be optimised with token boundary recording
+
+# 141. A protocol event stream
+
+QUIC is event driven
+
+# 142. Protocols and movement through space, memory, control flow, traversals
+
+a protocol can be a traversal pattern
+
+what do you visit?
+
+what is the semantics of Ocaml?
+
+
+
+# 143. The feature is that you don't have to do anything
+
+# 144. Realtime interruptibility
+
+# 145. Timeslicing
+
+Arrange a program based on time.
+
+# 146. Must happen before
+
+A line that is drawn in concurrent programs that things must happen before or after.
+
+# 147. Causality and atomics
+
+```
+thread1:
+1 while compare and swap
+1 store data[X] = something
+1 set Y = X
+
+thread2:
+2 while compare and swap
+2 store data[X] = something
+2 set Y = X
+
+Can these two go on in any order?
+
+2 while compare and swap
+1 while compare and swap
+2 store data[X] = something
+1 store data[X] = something
+2 set Y = X
+1 set Y = X
+
+If the first set Y = X happens after the second, Y goes backwards in time, but on the next write, X is incremented from X, so the data at data[X] is not overwritten, but a reader might take a while to read that occluded Y
+
+1 while compare and swap
+2 while compare and swap
+2 store data[X] = something
+1 store data[X] = something
+```
+
+# 148. System is an AST
+
+# 149. Protocol adoption
+
+We can adopt the memory protocol of MOSEI and cache coherency protocols as our cross-thread protocol.
+
+# 150. Align two streams
+
+READ events
+
+WRITE eevents
+
+align them
+
+# 151. Bucketer
+
+text based format for buckets of data that can be independently queried
+
+# 152. The hard thing
+
+With concurrency, is ordering?
+
+it's sliding puzzles all over
+
+# 153. Flow simulation/data shift
+
+# 154. Multidimensional computing - semantics
+
+there are interactions at different layers levels of the program that need to be wired up
+
+these layers can be projected to 2d space
+
+A* on a rubiks cube that rotates
+
+logistics
+
+hololocation - project path
+
+rotate meaning
+
+
+
+# 155. Stacks of behaviour
+
+A cell that is a list of keywords that compose to cause a behaviour.
+
+# 156. Concurrency Pegs
+
+When you atomically set the value, you cause movement, you can have mutual pegs that spinlock.
+
+# 157. All valid interactions
+
+```
+```
+
+# 158. Move between
+
+if X is inside A > B > C > D and then we want to move it somewhere?
+
+kinematics rotations
+
+# 159. Crystallalsis
+
+You create a equivalent movement through logistics and then you have an efficient execution plan based on the least movements to the same places with A*. rotation is a loop?
+
+A map, table, list are all placement patterns.
+
+
+
+# 160. IT in a box
+
+issue numbers for cross referencing
+
+# 161. Talk about as if you're doing it
+
+Talk about what needs to be done, where things need to go and what needs to happen in the future.
+
+Linguistical?
+
+variables
+
+"talk about a thing"
+
+traversal
+
+where do words reside?
+
+mutual sequences
+
+(one -> two -> three -> four)
+
+(a -> b -> c -> d)
+
+traversal patterns, are they relations?
+
+every traversal is valid
+
+
+
+# 162. LLM to AST
+
+# 163. Connect relationships of parts, assembly
+
+# 164. Bindings/associations can be pointers or not
+
+# 165. Fast dispatcher/traverser
+
+# 166. Thoughts on Postgres query compilation
+
+A tuple access is compiled and switch statements are generated.
+
+# 167. The communication is inferred
+
+# 168. Infer straight line control flow based on rules
+
+# 169. Recording token boundaries: recording interpreted languages
+
+How do you efficiently map token boundaries to elements for refresh logic?
+
+Can we record an interpreter's actions and then compile it?
+
+Can we arrange state machine formulation into a grid?
+
+Can we determine memory frees from an interpreter and then compile those frees into the application.
+
+need an accurate determination of state
+
+scope is state
+
+linking garbage collection frees to lines of code for free insertion
+
+# 170. 
+
