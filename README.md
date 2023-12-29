@@ -7,7 +7,7 @@ Welcome to Ideas for computing - batch 6.
 
 # 1. Icon grid on the left
 
-
+AWS console is very large and there are lots of panels and interfaces to all the different services in AWS. I would like a quick way to navigate every component.
 
 
 
@@ -491,6 +491,8 @@ Update position of sets of items
 # 46. Matrix translation fun GUI
 
 # 47. Traversal lines with stacks on them 
+
+for sideways iteration through a collection (execution)
 
 # 48. Insert into an access pattern
 
@@ -1163,5 +1165,596 @@ scope is state
 
 linking garbage collection frees to lines of code for free insertion
 
-# 170. 
+# 170. Aggressive parallel traversal
+
+# 171. Hyper state machine
+
+States live in different places and they have logistics to get between places.
+
+parameters are in registers or memory locations prepared for a call.
+
+# 172. Something as complicated as multithreaded program described at a high level
+
+interactions are states, an interaction of these two boxes can cause an effect over there
+
+default case - other side
+
+set the context, the gap, then define the cases.
+
+```
+a b c = d e k
+```
+
+use the sigma symbol for enumeration
+
+infer the minimum data for those cases to be representable, don't do it manually
+
+behaviour is a traversal
+
+rotations of data, and equivalencies, that's plurality
+
+when a b c happen, do d e k
+
+```
+a
+b
+c
+
+b
+a
+c
+
+
+
+```
+
+# 173. Scaling plan is a series of fixpoints
+
+# 174. How do you traverse lots of things simultaneously?
+
+If I've traversing two lists in parallel and there may be interesting links between the two sets, that's a join.
+
+# 175. "As if" I moved it here
+
+# 176. Virtual Execution
+
+A trace of code. from code sourcecode.
+
+# 177. "Mental Model" is a program/API
+
+program against my mental model.
+
+relationships are traversals
+
+
+
+# 178. Useful general purpose transformations
+
+# 179. Linked thing "auth"
+
+# 180. Parallel movements
+
+# 181. Iteration is just execution
+
+TCP and control flow and iteration
+
+a line to delineate locks and synchronization, barriers
+
+```
+  one two three four
+	-----------------------------------
+		do-something else
+		            ------------------------
+		                    other thing
+```
+
+
+
+# 182. Traversal is iteration
+
+# 183. Code Animation as pixels
+
+# 184. Token boundaries and canvases
+
+for efficent reexecution, immediate mode
+
+# 185. A database that is not network reachable but storage reachable
+
+# 186. Type Traversal Fingerprint
+
+# 187. Traversing fast
+
+It's limited by rate of instruction execution.
+
+# 188. Semantic equivalence
+
+rust and C
+
+# 189. Adaptive latency to throughput
+
+What's the fastest way for a GUI to react to action in the background?
+
+# 190. Everything is a traversal
+
+# 191. Lambdas are named events
+
+# 192. Equivalent slot - visual understanding of slotting
+
+# 193. Lifetimes, scope, ownership, and OOP
+
+Explicit lifetimes.
+
+# 194. Monads bind takes a function that accepts the wrapped item  that returns a monad
+
+```
+```
+
+# 195. Traversal types and algebra inferred from output code
+
+# 196. GUI leaf detection traversal
+
+What is the minimum traversal to get the data ready for the screen?
+
+# 197. Behaviour stacks
+
+```
+```
+
+a behaviour is a series of events, in order
+
+# 197. Why a single threaded program need reference counting
+
+# 198. Code Reachability
+
+# 199. Parallel lines and whilst
+
+# 200. Want spec from any point
+
+Import behaviours.
+
+# 201. Parallel line GUI - Async System Surface
+
+Can issue multiple requests to GUI for rendering, network or storage.
+
+sharding framework Tuples of options.
+
+NVMe storage, async IO, 
+
+# 202. Overlapping in multiple directions, lifetimes
+
+lifetimes overlap in typical programs
+
+# 203. Stack item is a context
+
+# 204. Label is a closure
+
+# 205. State space package manager with standard cycle
+
+# 206. Arrow lang
+
+Direction can be swapped but meaning and semantics stays the same.
+
+```
+executor <- future
+future -> waker
+```
+
+the order of the words decides the direction the arrow decides the call direction
+
+# 207. Simplification of async
+
+Callbacks interfere with understandability of data flow.
+
+Rust saving a waker is like a flag.
+
+```
+			set_waker -> context
+future ->
+	^							<-- executor
+	|__________waker ---------->				
+					
+```
+
+# 208. Tree async data structure sharding framework visualisation: Aync units
+
+"Rectangular queued Block" units
+
+# 209. Embedded web system language
+
+Every data structure has GUI component associated.
+
+# 210. Execution tracing Back to present, control flow loop/cycle
+
+Specify everything in relationship to other things on the path to repeating a cycle.
+
+# 211. Graphical state management as token stream
+
+# 212. Community Idea: Infographic home
+
+Generate canvases/image files from interesting data.
+
+# 213. Flags between threads
+
+Just use an atomic instruction and double buffering and a mailbox for each thread to thread pair. RCU
+
+# 214. Representing semantics of code
+
+A query engine has useful properties that would be useful for a typical process. How to represent equivalence.
+
+# 215. 
+
+# 216. Comments in the sourcecode are the output, REPL as comments
+
+# 217. You don't need a base case: Properties on sets
+
+# 218. Accelerated lazy coroutines and lazy browsers: TLA + Incremental parsing + compilation
+
+With a 33MB `dot` file, this program is very slow.
+
+```
+dot -Tsvg -o ringbuffer-tla/spec.svg ringbuffer-tla/spec.dot
+```
+
+Typesetting a big graph, is slow. Can we do it incrementally?
+
+Facts look like method calls
+
+# 219. My problem with scheme is nonlinear traversal
+
+# 220. Monad generation
+
+Auomatically infer monads based on facts ("vary operator")
+
+# 221. Tree of parallel children and message passing
+
+Efficient handover.
+
+# 221. Parallel sequences that are synchronized or out of synchronization
+
+Direct I/O, sequences
+
+
+
+# 221. Drawing backends - is iteration the bottleneck? Latency? Refresh?
+
+# 222. Bucket cloud
+
+We'll scale you up to a bucket automatically.
+
+# 223. Aligned iterators
+
+This is wonderful idea, an iterator is a sequence and they can run in parallel, and they need or not be aligned.
+
+Sum types.
+
+Handover, efficient.
+
+Structured interaction proramming.
+
+# 224. A system that supports drastic changes while running
+
+# 225. Common AST
+
+# 226. Behaviour cycles, virtual processes, "bite command"
+
+Interleaving of behaviour cycles
+
+behaviour cycles correspond with lifetimes
+
+an event stream goes to a virtual process, sync and resync ("bite")
+
+compilation is a static event stream
+
+alignment
+
+joins
+
+fabric - what you basing on, linear memory, function application etc
+
+the decision generation can be slow
+
+ticker units - synchronize with
+
+# 227. Public AST
+
+# 228. Proportionate
+
+# 229. Pay people to define behaviours/Pay people to interact
+
+# 230. 
+
+# 231. 
+
+# 232. Persistent actor REPL, not a nodal editor, not a notebook
+
+# 233. Delegation interception, dispatch is the hard problem
+
+Animate data rather than control flow State machine formulation as asserting fact movements
+
+# 234. Semantic AST and fused behaviour
+
+# 235. Placeholder layouting & algebra
+
+You're always describing algebraic layouts of formulas and time, in a bounded collection or not.
+
+Algorithms are just ordered algebra.
+
+# 236. Parsing is a rule encoding?
+
+recursive parsing, for ASTs too and the AST is recursively parsed, that's a fixpoint! 
+
+could this be the behavioural fusion?
+
+detect recursive loop sequences in the AST, where the fixpoint grows monotonically
+
+get types that depend on characteristics of data for free
+
+AST is an input to the parser and can replace any part.
+
+lexical scope
+
+garbage-collector, events, arguments
+
+s-expressions as types
+
+```
+(https-server (http-server (tcp-server)))
+```
+
+beautiful
+
+assembly programming, meta language
+
+sets of tokens, context
+
+substititution?
+
+parsing collects into a tree structure, how to parse a tree and decide on subsumption?
+
+```
+parent = child | child2 | child3
+child < subchild1
+child < subchild2
+```
+
+Where to subsume up to?
+
+And if you want to skip wrapped items, equivalence?
+
+# 237. Immediate mode GUI to retained mode inferences
+
+# 238. Properties, over time
+
+# 239. Streams that meet in the middle
+
+An iterator that is paginated.
+
+# 240. Show cycling on the screen!
+
+need to implement TLA state space generation
+
+# 241. GUI updates is term rewriting
+
+# 242. "Parellize" command cycler
+
+ # 243. A new behaviour is the synthesis of new types and events
+
+What's an invariant?
+
+# 244. Explicit closures
+
+It's a function call with the environment.
+
+# 245. Numeric blocks
+
+# 246. Parsing application state
+
+# 247. Copy pastable prologues
+
+# 248. Parse application state
+
+# 249. Engine all the thing, it's not a framework
+
+multithreading data scaling
+
+# 250. Enrichment, crossinvariants, masking
+
+cross invariants where each behaviour maintains properties, interleaving is how behaviour is maintained with regard to other objects.
+
+# 251. Billion scheduling
+
+O notation taken literally.
+
+# 252. Instruction counting
+
+# 253. Try to get toward something
+
+scheduling, slots
+
+# 254. High level Kubernetes-like
+
+Depend on properties.
+
+# 255. Rope data structure and standard iterators
+
+# 256. Autoiterator
+
+State machine formulation can handle iteration behind the scenes, and accelerated traversal.
+
+# 257. State machine formulation tells where to put the code
+
+You "depend" by creating a reference!
+
+# 258. A deeply nested data structure to English
+
+# 259. Every program is a compiler, prolog
+
+# 260. Call tracing
+
+# 261. Iterators are trees
+
+# 262. You need to decide on the steps
+
+state machine formulation knows what you need to define for the behaviour to be complete.
+
+# 263. Multiplexing defined with state machine formulation
+
+# 264. Value Grid standard library
+
+```
+date time file http-get http-post 
+socket dns ip-address 
+```
+
+Time and date could be extremely powerful primitives for coroutines.
+
+Read Compile Execute (RECLoop) prepare AST and process it for compilation, automatic thread safety
+
+scheduling algorithm - interleave events
+
+event grids
+
+wait soak, wait event, join
+
+iteration/relations
+
+event sequencing combined with imperative part
+
+mailboxes, events
+
+```
+stream
+	t = datetime.now()
+	while True:
+		yield t + timedelta(seconds=1)
+```
+
+thread safety and mutual exclusion and execution
+
+barrier runtime?
+
+dining philosophers
+
+handles for threads
+
+
+
+# 265. Unscheduled time is latency
+
+and direct adjacency is super low latency
+
+# 266. Text based editor, ropes for GUIs
+
+Extremely efficient recalculation
+
+arbitrary insert between, wrapping and other interactions that are efficient.
+
+# 267. Dancing future state equivalency
+
+Graph exploration
+
+
+
+# 268. Software browser II
+
+URL configurs everything.
+
+# 269. One giant state space
+
+Type check the entire state space. And it is verified.
+
+# 270. Community computer
+
+Don't break anything but you can add behaviours to it.
+
+
+
+# 271. Memory block region mapper and Memory grid
+
+Memory layout is a protocol.
+
+hierarchy of memory managers
+
+the article on object orientated programming being pitfalls and the visualisation of the cache
+
+
+
+# 272. Combining the skills of multiple programmers
+
+# 273. Split keys asdf, hjkl, relative, absolute
+
+# 274. Signal travelling from inside a box out the box
+
+ISR routines, contexts, lifetimes,
+
+Signal send from inside a box
+
+# 275. Tree box programming
+
+contexts that transmit from boxes
+
+ # 276. Keepwith, try, invariant maker
+
+minimize, maximise, autofit
+
+# 277. Useful register algorithms
+
+Assembly join algorithm?
+
+# 278. Static ordered regions of data is easy to process
+
+serialization is branching
+
+# 279. Regrouping, reparenting a line stream
+
+This is the behaviour of the pipeline:
+
+```
+```
+
+I want to customise the pipeline.
+
+# 280. Delegating is cross boxes, it's adjacency
+
+# 281. Branchless programming and traversal patterns
+
+# 282. Iterator of types
+
+Control flow regions are types?
+
+# 283. OOP is slow but easy to understand, can we map OOP to ECS?
+
+# 284. Async is just a message
+
+map function:
+
+```
+divide list in to chunks
+send chunk to thread
+send work function to thread
+thread executes work function
+thread send result back to originating thread
+wait for all replies, merge
+```
+
+this formulation can be processed for dependencies to see what can run, topological sort
+
+flatmap parallel
+
+```
+```
+
+event wait type soak, where to branch to in the future
+
+state machine formulation for microop definition, need to specify what events stack and don't stack
+
+```
+map = thread(start) divide(list, N, chunks[]) | send(chunks, threads) send(function, threads) | execute(function, chunk, result) | wait(start, threads, result) send(threads, result, start)  ) 
+```
+
+synchronous programming is a event soak state 
+
+# 285. Parallelism that scales
+
+# 286. Programs are slow due to branching and OOP
 
