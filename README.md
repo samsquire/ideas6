@@ -5,7 +5,7 @@ Welcome to Ideas for computing - batch 6.
 
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons Licence" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
 
-# 1. Icon grid on the left
+# 1. Small Icon grid on the left
 
 AWS console is very large and there are lots of panels and interfaces to all the different services in AWS. I would like a quick way to navigate every component.
 
@@ -1754,7 +1754,376 @@ map = thread(start) divide(list, N, chunks[]) | send(chunks, threads) send(funct
 
 synchronous programming is a event soak state 
 
-# 285. Parallelism that scales
+# 285. Eventually consistent parallelism that scales reads and writes
+
+If you add different numbers to the same number in different threads, you're getting 12 reactions for the price of 1.
+
+Interpret the output?
+
+That's a vector.
+
+Musical sequences? Patterns?
+
+Tree relationships
+
+how to represent tree relationship with points on a grid?
+
+sort on the client
 
 # 286. Programs are slow due to branching and OOP
+
+# 287. Traverse states, numbers changing
+
+A value's position is a number in memory.
+
+```
+a = 6
+b = a + 7
+
+# a moves from the memory of a to the location of b
+```
+
+
+
+# 288. Lots of time in a day
+
+# 289. Infer the rotations in memory
+
+# 290. Escape context layering
+
+# 291. App Images
+
+# 292. Path as-is
+
+What are all the paths to this line of code?
+
+# 293. Causality to state
+
+An AST simulaneously describes steps and what should go on.
+
+where everything is
+
+
+
+# 294. Interaction visualiser with placeholders
+
+# 295. The microops of parallel map AST
+
+# 296. Understanding how Java does the async
+
+The runtime pauses the current "thread" which is not a function but an instruction stream.
+
+
+
+# 297. Hyper relation
+
+Traversals of traversals. Position of a piece of data in global space and in traversal space.
+
+Global identity movement
+
+# 298. This happens, then this happens
+
+AST, the computer works out how to efficiently schedule it. (where to add the change) Connect the paths.
+
+Parallel map implementation. Microops
+
+Traversals
+
+# 299. Graph properties
+
+The graph is the properties of the system, not the system itself.
+
+# 300. Transpose YAML
+
+Refer to YAML blocks inline like this and it unpacks.
+
+```
+block1 | block2 | block3
+```
+
+
+
+# 301. Types and state
+
+# 302. Browser that actually a server
+
+# 303. Parser puts down
+
+A loop in a database, is on a stack. Stacks get in the way of compositional code.
+
+Intuition about btrees. An if statement tells you where you go.
+
+# 304. Intermediate representation everywhere - every function is an intermediate representation stream that can be bucketed and then scheduled
+
+Time is a ticker. File systems and files are streams.
+
+```
+while True:
+	yield time.now()
+
+```
+
+
+
+# 305. Select memory locations for traversal
+
+# 306. Pointers as folders
+
+# 307. Write a program that saturates network, disk, threads
+
+# 308. Types in C are just numerics
+
+# 309. Using a hashmap as basic unit for message sending
+
+Can hash set permutations to make set publish a constant time thing.
+
+compile out unused requirements
+
+# 310. Dispatch an object to multiple possible receivers
+
+loop and OR
+
+# 311. Object locality
+
+# 312. Shift the position of the future
+
+In C and assembly, you feel the effects of it and the app crashes.
+
+Future shapes, state exploration
+
+# 313. Presentable surface: unerstandable programming
+
+A large codebase is difficult and opaque to understand, but there are stories which are easy to understand.
+
+# 314. trying to get the heap usage of a program, is manual string parsing of /proc/self/maps
+
+# 315. Assembly programming, what should happen
+
+Just like that.
+
+register allocation and imaginary registers
+
+sync with (sides)
+
+what's very convenient to write, and let the computer fill the details in
+
+create a stack explicitly
+
+margin represents the context?
+
+# 316. JSON B-tree and layered trees
+
+# 317. Shortest path scheduling
+
+traversals
+
+# 318. Expertise match, requirements
+
+say all my skills, representations
+
+# 319. Representations are work
+
+# 320. Layers can be useful
+
+# 321. Name protocol
+
+Protocol for moving about names
+
+# 322. Event handling protocol
+
+Binary protocol. Generate the sequence from any program, learn the sequence of types.
+
+Can use OCaml or Haskell!
+
+Turing completeness and handling of states, scenarios.
+
+You get the advantage of proramming language parsing for free.
+
+Driver callflow.
+
+websockets, http, QUIC, 
+
+it's a standard data flow API.
+
+How to get any programming language to control something?
+
+Efficiency?
+
+Protocol for protocols.
+
+rigid part is the runtime
+
+dream API
+
+async
+
+binary AST
+
+# 323. Parallel Log eventual consistency
+
+You can look at the last committed log for other threads.
+
+```
+thread-1 log | VAL VAL
+thread-2 log | VAL VAL VAL
+thread-3 log | VAL VAL
+thread-4 log | VAL VAL
+
+Eventual consistency, no writes are lost
+Are you trying to accelerate writes to the same field?
+```
+
+
+
+thunk, do processing for 1 second, check for marker
+
+bucket scheduling
+
+how do drivers get written?, timing
+
+# 324. You're the storage
+
+# 325. State space exploration of eventual consistent system
+
+# 326. People programmable systems
+
+just act, and the computer works it out, ad hoc
+
+# 327. Iterator database
+
+Btree backed iterators
+
+# 328. Stop the world rewrite
+
+explicit call when details change.
+
+call a function to change the type of something
+
+
+
+# 329. Static types makes sense
+
+# 330. Infer the redraw with boundary analysis
+
+# 331. Thunk pooling/persistent thunks
+
+relationships between invocations
+
+windowing relationships
+
+
+
+# 332. Customer self hosts and we poll them
+
+No high SLA requirements
+
+Must not Go down.
+
+# 333. File system object for files
+
+fast archive
+
+mount a file system and local loopback file system?
+
+# 334. Compiler abstract tokens
+
+The C parser is generating meaningful tokens from the lexical context.
+
+# 335. The line between caller, callee, 
+
+wrapping values, pratt parser, replacement
+
+have to make a decision that is flexible for the future
+
+# 336. Performance templates
+
+# 337. Multiplication of "things" and algebra for their placement
+
+traversal over those algebraic things, btree for position indexing
+
+# 338. Term rewriting and TLC
+
+# 339. Low latency Thread pool and efficiency
+
+In general, the more writers or more threads that you need to be thread safe between the more latency.
+
+If there's one thread handling IO and multibarrier thread pool. The barrier has 2 threads in each pair.
+
+If we want to submit a different piece of work from multiple threads.
+
+1 io thread, 5×2 barrier threads.
+
+external thread ingest can only be from one thread to one thread, to the barrier.
+
+io thread 
+
+# 340. Inspection samples for codebase
+
+Like a Python notebook for an end-to-end scenario for planning.
+
+# 341. Memcpy can move an object of any size
+
+Sequence in memory, rectangles. bin packing
+
+# 342. GUI text named panels
+
+Lots of useful serialisations for different scenarios. All text based.
+
+# 343. Data structures visit sequences
+
+# 344. Indexed iterators
+
+# 345. Tree/Graph paginator
+
+# 346. Layers of expertise
+
+state machine formulation
+
+# 357. Meaningfulness direction
+
+it just keeps being meaningful
+
+# 358. Movement through space
+
+Programming, logistics around control flow.
+
+# 359. Bidirectional term rewriting
+
+pointers, unions
+
+# 360. Efficient term rewriting - just use memory as a state machine
+
+# 361. Types are two-value tuples, but traversals can be any length
+
+# 362. Term rewriting with regard to time
+
+the situation changes depending on what you're doing, different orderings or collections of objects or directions
+
+API baskets and relationships
+
+
+
+```
+epoll.register
+	fds that need to be subscribed
+epoll.wait
+```
+
+unification?
+
+transforming API baskets, contextual transformations
+
+program from one basket to another
+
+refactoring?
+
+# 363. Draw a line barrier
+
+# 364. Loop maker, "I need this to repeat" but not this
+
+pratt parser
+
+click the visitor order and the loop is generated, buckets with traversals inside?
+
+
 
