@@ -330,7 +330,7 @@ This is a design for evented assembly paired with my multithreaded barrier runti
 0 Arrived at task 8
 ```
 
-<a id="after-task-sequence">
+<a id="after-task-sequence"></a>
 
 * When `task number == thread number`, there is nobody else running this particular instance of one of those 64 tasks, providing mutual exclusion.
 
