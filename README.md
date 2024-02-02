@@ -229,14 +229,113 @@ In databases it would be updating the foreign key.
 
 # 37. Strange structs
 
-`cut` a context of data.
+`cut` a context of data which can go up or down a traversal, which is a struct in itself, like a reduce which is dynamic. They're compatible.
 
-# 38. Evented assembly - Yielding until the next event is reached
+# 38. Evented assembly - Yielding efficiently until the next event is reached
 
-This is a design for evented assembly paired with my multithreaded barrier runtime. This is a general event handling solution for high concurrency. Design goals:
+This is a design for evented assembly paired with my multithreaded barrier runtime. This is a general event handling solution for high concurrency and parallelism. [Link to multithreaded barrier runtime](https://github.com/samsquire/assembly). Design goals:
 
-* High throughput for coroutines on the same thread for decoupling code.
-* High throughput between threads.
+* The multithreaded barrier is a "phaser" which means it runs a sequence of tasks in lockstep (the pattern is visualised below) in a predictable and deterministic rhythm, which also provides thread safety or mutual exclusion. The first number is the thread the second number is the task number. Each thread has its own set of tasks, which can be different (8 threads × 8 tasks = 64 independent tasks) Notice how the thread numbers can be in any sequence and unpredictable but the task numbers are predictable and monotonically increasing before resetting and starting the pattern again. [Jump to go past the example](#after-task-sequence)
+
+```
+8 Arrived at task 0
+5 Arrived at task 0
+2 Arrived at task 0
+6 Arrived at task 0
+3 Arrived at task 0
+4 Arrived at task 0
+7 Arrived at task 0
+0 Arrived at task 0
+1 Arrived at task 0
+9 Arrived at task 0
+9 Arrived at task 1
+3 Arrived at task 1
+4 Arrived at task 1
+8 Arrived at task 1
+7 Arrived at task 1
+5 Arrived at task 1
+6 Arrived at task 1
+1 Arrived at task 1
+2 Arrived at task 1
+0 Arrived at task 1
+5 Arrived at task 2
+6 Arrived at task 2
+0 Arrived at task 2
+1 Arrived at task 2
+8 Arrived at task 2
+7 Arrived at task 2
+9 Arrived at task 2
+2 Arrived at task 2
+3 Arrived at task 2
+4 Arrived at task 2
+4 Arrived at task 3
+7 Arrived at task 3
+3 Arrived at task 3
+9 Arrived at task 3
+6 Arrived at task 3
+8 Arrived at task 3
+5 Arrived at task 3
+1 Arrived at task 3
+2 Arrived at task 3
+0 Arrived at task 3
+4 Arrived at task 4
+8 Arrived at task 4
+1 Arrived at task 4
+5 Arrived at task 4
+7 Arrived at task 4
+6 Arrived at task 4
+2 Arrived at task 4
+9 Arrived at task 4
+0 Arrived at task 4
+3 Arrived at task 4
+3 Arrived at task 5
+5 Arrived at task 5
+9 Arrived at task 5
+6 Arrived at task 5
+7 Arrived at task 5
+8 Arrived at task 5
+4 Arrived at task 5
+0 Arrived at task 5
+1 Arrived at task 5
+2 Arrived at task 5
+4 Arrived at task 6
+2 Arrived at task 6
+7 Arrived at task 6
+6 Arrived at task 6
+8 Arrived at task 6
+5 Arrived at task 6
+3 Arrived at task 6
+9 Arrived at task 6
+0 Arrived at task 6
+1 Arrived at task 6
+4 Arrived at task 7
+9 Arrived at task 7
+5 Arrived at task 7
+7 Arrived at task 7
+3 Arrived at task 7
+6 Arrived at task 7
+8 Arrived at task 7
+2 Arrived at task 7
+1 Arrived at task 7
+0 Arrived at task 7
+3 Arrived at task 8
+5 Arrived at task 8
+6 Arrived at task 8
+2 Arrived at task 8
+4 Arrived at task 8
+7 Arrived at task 8
+8 Arrived at task 8
+1 Arrived at task 8
+9 Arrived at task 8
+0 Arrived at task 8
+```
+
+<a id="#after-task-sequence"/>
+
+* When `task number == thread number`, there is nobody else running this particular instance of one of those 64 tasks, providing mutual exclusion.
+
+* High throughput, low latency for coroutines communicating on the same thread for decoupling code. The compiler can elide inserting movements and scheduler calls or yields when coroutines are on the same thread for efficiency and are binpacked next to eachother. It's basically a method call or inlining. 
+* High throughput, low latency between threads when coroutines are running in parallel.
 * How much space do we allocate to a coroutine? **It depends how parallel it is.**
 * It handles observers.
 * This is the object hierarchy: we have mailboxes for threads, there are facts and there are coroutine objects.
@@ -245,57 +344,69 @@ This is a design for evented assembly paired with my multithreaded barrier runti
 * A lot of the time, coroutines shall only be on one thread.
 * Either the thread has a mailbox and the thread routes data in a mailbox to a particular coroutine or each coroutine can own a mailbox, it depends on your memory requirements.
 
+Here is the object structure:
+
 ```
-fact-1
-	coroutine-2
-fact-2
-	coroutine-1
-	
 thread-1
-	runqueue-lower
-	runqueue-higher
+	inbox-2-higher
+	inbox-3-higher
+	inbox-4-higher
+	inbox-5-higher
 	coroutine-1
-        mailbox-1
-        mailbox-2
-        mailbox-3
-        mailbox-4
-        mailbox-5
+        mailbox-1-lower
+        mailbox-2-lower
+        mailbox-3-lower
+        mailbox-4-lower
+        mailbox-5-lower
 thread-2
-	runqueue-lower
-	runqueue-higher
+	inbox-1-higher
+	inbox-3-higher
+	inbox-4-higher
+	inbox-5-higher
+	runqueue
 	coroutine-1
-        mailbox-1
-        mailbox-2
-        mailbox-3
-        mailbox-4
-        mailbox-5
+        mailbox-1-lower
+        mailbox-2-lower
+        mailbox-3-lower
+        mailbox-4-lower
+        mailbox-5-lower
 thread-3
-	runqueue-lower
-	runqueue-higher
+	inbox-1-higher
+	inbox-2-higher
+	inbox-4-higher
+	inbox-5-higher
+	event-mailbox
+	runqueue
 	coroutine-1
-        mailbox-1
-        mailbox-2
-        mailbox-3
-        mailbox-4
-        mailbox-5
+        mailbox-1-lower
+        mailbox-2-lower
+        mailbox-3-lower
+        mailbox-4-lower
+        mailbox-5-lower
 thread-4
-	runqueue-lower
-	runqueue-higher
+	inbox-1-higher
+	inbox-2-higher
+	inbox-3-higher
+	inbox-5-higher
+	runqueue
 	coroutine-1
-        mailbox-1
-        mailbox-2
-        mailbox-3
-        mailbox-4
-        mailbox-5
+        mailbox-1-lower
+        mailbox-2-lower
+        mailbox-3-lower
+        mailbox-4-lower
+        mailbox-5-lower
 thread-5
-	runqueue-lower
-	runqueue-higher
+	inbox-1
+	inbox-2
+	inbox-3
+	inbox-4
+	runqueue
 	coroutine-1
-        mailbox-1
-        mailbox-2
-        mailbox-3
-        mailbox-4
-        mailbox-5
+        mailbox-1-lower
+        mailbox-2-lower
+        mailbox-3-lower
+        mailbox-4-lower
+        mailbox-5-lower
 ```
 
 * Could we assign mailboxes to particular coroutines, for cross thread usage?
@@ -309,7 +420,7 @@ The runqueue for threads looks like this:
  2: [[3, 6, 9, 12, 15, 18, 0, 3, 6, 9, 12, 15, 18]]}
 ```
 
-
+Runqueue submission can be an inbox that is processed by a thread as usual.
 
 In assembly, our state machine formulation might need to wait until an event fires occurs so that it can continue.
 
@@ -322,7 +433,6 @@ state1 = state2 | state3
 ```
 
 * When there is a yield we know the yield point based on the instruction pointer (**%rip**)
-
 * Each coroutine has its local variables and state stored relative to **%rax**
 * Local variables are always kept by a coroutine, they are local. But they are available to other coroutines on the same thread.
 * Each thread **AND** coroutine has an output buffer called **higher** (**%rdi**) and input buffer called **lower** (**%rsi**) for double buffering which allows them to be thread safe when executed with the barrier runtime.
@@ -330,23 +440,80 @@ state1 = state2 | state3
 * [base_reg + index_reg*scale + displacement] is enough to get all the local variables
 * `yield` places **%rip** into (**%rax**) to store the coroutine's position into memory. This pauses the coroutine. If the coroutine has its own stack, it also stores **%rsp** into **24(%rax)**.
 * `activate` moves **(%rax)** the coroutine position into a register %r10 and **jmp *%r10** to jump **inside the coroutine to the resume point**
+* `register` registers a position (label) with an event, which is a bit like a callback entry. Register sends the callback entry to every thread via that thread's mailbox. This is a bit like shift/reset
+* When `fire` runs, it checks the callback entries in the local thread, it checks if the coroutine can run on the local thread where the fire happened. Alternatively, it submits a runqueue item for another thread or however many threads it needs to fork to.
+* Fire can cause forking.
+* `wait` puts a coroutine into a state where it is blocked until a registered state is reached.
 * `fire` indicates something is true, which may cause readiness for another coroutine. This can potentially cause multiple things to execute at the same time, based on parallelism and concurrency.
+* The stateline syntax restricts the level of parallelism and concurrency, where events can be handled where.
+* Fire around. Wait masks.
+  Effects/latches, register can create a stack.
+* Fire depends on current state.
 * There's an element of pattern matching here because facts are parametered.
 * Fire will have to insert into other threads.
 * For events that are parallelised we can do a replicated parallel (fork) which writes to multiple thread coroutines.
 * The coroutine writes its data into **X(%rdi)** higher buffer that it wants to share with other coroutines. This shall be exchanged at the next synchronization event by the multithreaded barrier.
-* The `fire` takes a fact, and some parameters and writes an **activation record** into triggered coroutine's mailbox (**higher**) input buffers, which is thread safe. And it adds that coroutine to the **higher** runqueue of that coroutine's thread.
+* The `fire` takes a fact, and some parameters and writes an **activation record** into triggered thread's mailbox (**higher**) input buffers, which is thread safe. And it adds that coroutine to the **higher** runqueue of that coroutine's thread.
 * If the coroutine ALWAYS operates on the same thread, then it can reuse the same buffer and doesn't need to use `higher`.
+* Does a coroutine live on a particular thread?
 * Does the firing thread or the receiving thread check if event critieria is met?
 * Eager criteria checking or delayed criteria checking.
 * **Yield** decides which coroutine to activate based on a runqueue.
-* Each thread has its own runqueue which is double buffered.
+* Each thread has its own inbox to every other thread which is double buffered.
 * Streamlining coroutines - if two coroutines directly talk to eachother, we can always run them sequentially and share buffers and avoid data moving.
 * The topology between coroutine is an API surface.
+* Movement sequences, permutations are different named states
 
 A fact can be represented by a sequence of numbers
 
 Do we guarantee that after a fire and yield that the event was processed? Callbacks?
+
+```
+yield:
+deactivate | schedule
+
+fire:
+check-activations-graph | send-starts | schedule
+
+register:
+insert-activation-record
+```
+
+effects, how is it similar to a promise?
+
+(pos, state) tuple
+
+state machine formulation is like a mixture of a stack and a sequence
+
+```
+x = new Promise(function () {
+
+});
+x.resolve(); # this is like "fire"
+
+
+```
+
+exceptions
+
+```
+exception-error | do-something | exception-error-final
+exception-error | do-something | error | exception-error-final
+
+```
+
+
+
+```
+print_number:
+
+something | print-number | something | something
+something | X | something | something
+```
+
+reminds me of method dispatch in self and inheritance
+
+reactivate the past
 
 ```
 state1:
@@ -384,6 +551,18 @@ state3:
 ```
 
 Register clobbering is fine, all local variables come from memory.
+
+Loop instances
+
+Loop and write data, then run body of loop
+
+```
+state1:
+	mov $10, %rdi # loop variables
+	mov $1, (%rax)
+	fork		# sends runqueue submission request to another thread mailbox
+	
+```
 
 
 
@@ -603,6 +782,8 @@ Create resources in clouds, with placeholder names. As-if
 # 80. Compact and equivalent traversals, traversal graphs
 
 Can a traversal be algebra and automatically deduced?, prexecution
+
+a* equivalent positions
 
 # 81. Communication editor and placeholders
 
@@ -2067,11 +2248,13 @@ Sequence in memory, rectangles. bin packing
 
 # 342. GUI text named panels
 
-Lots of useful serialisations for different scenarios. All text based.
+Lots of useful serialisations for different scenarios. All text based. Like typora tree view on the left.
 
 # 343. Data structures visit sequences
 
 # 344. Indexed iterators
+
+can a btree be tied to a loop?
 
 # 345. Tree/Graph paginator
 
@@ -2117,13 +2300,157 @@ program from one basket to another
 
 refactoring?
 
-# 363. Draw a line barrier
+# 363. Event ordering
 
-# 364. Loop maker, "I need this to repeat" but not this
+In memory, traversal patterns
+
+# 364. Rewrite recursive function as iterative function
 
 pratt parser
 
 click the visitor order and the loop is generated, buckets with traversals inside?
+
+loop maker
+
+# 365. Minimum cost equivalence, rule traversal
+
+Generics is an example.
+
+# 366. Movement through static thunks, useful groupings of API calls
+
+Grains of sand
+
+# 367. Token sequences and change range detection, boundarise
+
+# 368. Pattern database (table of named colourful patterns) that can be arranged and combined into layers
+
+a useful collection of words in IDE, like APL
+
+# 369. State machine formulation and loops unfolded
+
+We never return to an old position, so we can always memory "free".
+
+# 370. "Useful" tool
+
+# 371. APIs aren't data structures
+
+An API or request-response is not a datastructure.
+
+# 372. Context search
+
+OR AND AND search when you phone something and do a query for relevant cases.
+
+# 373. Additive programming
+
+# 374. Behavioural Spec that isn't tied to a language
+
+
+
+# 375. When do you pop return?
+
+That's when you can free.
+
+# 376. Layered community cloud
+
+# 377. How many operations can you do in parallel, buffers
+
+
+
+# 378. Blog post sequence generator
+
+# 379. Architecture schematics
+
+directory structure is an architecture
+
+# 390. Compile database query to machine code
+
+# 391. Boxes that are alive
+
+# 392. Behaviour tokens
+
+# 393. Virtual reply
+
+Host content, then user merges it together for reply chain.
+
+# 394. Page bulk query
+
+
+
+# 395. Visitor pattern and sequences you can resynchronize
+
+# 396. Valid emission sequences
+
+Rust, borrow checker
+
+# 397. Goto isn't bad if you have a type too
+
+# 498. Variables and method calls
+
+# 599. Sequence To Monad
+
+holes you fill, polymorphism
+
+# 600. Movement in constant time
+
+Lookup is O(1)
+
+# 601. Notational work
+
+Semantics, work
+
+model the machine's abilities, O notation
+
+# 602. A program that is an event dispatcher with limited runtime
+
+We can host it with low latency and low effort, it doesn't necessarily need to be turing complete
+
+# 603. Contiguous regions of memory
+
+My contiguous hashmap relies on contiguousity for cheap memcpy, using array accessor syntax.
+
+You can grow in 4 directions
+
+```
+block-1 1 GB region
+block-2 1 GB Region
+block-3 1 GB region
+
+
+```
+
+Freeing memory
+
+relationships between stacks, contiguity
+
+file systems store things in blocks
+
+binary serialization
+
+btrees
+
+we can add pointers together, dereferencing
+
+navigation?
+
+a collection object, state machine formulation
+
+growable collections
+
+pretty much all data structures rely on contiguity
+
+windows of TCP
+
+when is a buffer not needed anymore?
+
+# 604. Movement patterns
+
+# 605. Interaction sequences
+
+A file with the merging of two sequences.
+
+
+
+
 
 
 
