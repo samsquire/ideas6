@@ -233,9 +233,16 @@ In databases it would be updating the foreign key.
 
 # 38. Evented assembly - Yielding efficiently until the next event is reached
 
-This is a design for evented assembly paired with my multithreaded barrier runtime. This is a general event handling solution for high concurrency and parallelism. [Link to multithreaded barrier runtime](https://github.com/samsquire/assembly). Design goals:
+If you think of the TCP protocol, HTTP or interacting particles in physics or actors or concurrency in programming of IO and the user, the disk, you can think of each "thing happening" as an event.
 
-* The multithreaded barrier is a "phaser" which means it runs a sequence of tasks in lockstep (the pattern is visualised below) in a predictable and deterministic rhythm, which also provides thread safety or mutual exclusion. The first number is the thread the second number is the task number. Each thread has its own set of tasks, which can be different (8 threads × 8 tasks = 64 independent tasks) Notice how the thread numbers can be in any sequence and unpredictable but the task numbers are predictable and monotonically increasing before resetting and starting the pattern again. [Jump to go past the example](#after-task-sequence)
+Given an event, I need to dispatch to an event handler, a bit like an event loop that a GUI program such as Win32 or programming language such as Nodejs would use.
+
+This is a design for evented assembly paired with my multithreaded barrier runtime. This is a general event handling solution for high concurrency and parallelism. [Link to multithreaded barrier runtime](https://github.com/samsquire/assembly). Detailed assembly examples are further down. Design goals:
+
+* High throughput, low latency for coroutines communicating on the same thread for decoupling code. The compiler can elide inserting movements and scheduler calls or yields when coroutines are on the same thread for efficiency and are binpacked next to eachother. Then it's basically a method call or inlining. 
+* High throughput, low latency between threads when coroutines are running in parallel.
+* Can fork coroutines cheaply.
+* The multithreaded barrier is a "phaser" which means it runs a sequence of supersteps in lockstep (the pattern is visualised below) in a predictable and deterministic rhythm, which also provides thread safety or mutual exclusion. The first number is the thread the second number is the task number. Each thread has its own set of tasks, which can be different (8 threads × 8 tasks = 64 independent tasks) Notice how the thread numbers can be in any sequence and unpredictable but the task numbers are predictable and monotonically increasing before resetting and starting the pattern again. [Jump to go past the example](#after-task-sequence)
 
 ```
 8 Arrived at task 0
@@ -332,13 +339,12 @@ This is a design for evented assembly paired with my multithreaded barrier runti
 
 <a id="after-task-sequence"></a>
 
-* When `task number == thread number`, there is nobody else running this particular instance of one of those 64 tasks, providing mutual exclusion.
+* When `task number == thread number`, there is nobody else running this particular instance of one of those 64 tasks, providing mutual exclusion in that thread.
 
-* High throughput, low latency for coroutines communicating on the same thread for decoupling code. The compiler can elide inserting movements and scheduler calls or yields when coroutines are on the same thread for efficiency and are binpacked next to eachother. It's basically a method call or inlining. 
-* High throughput, low latency between threads when coroutines are running in parallel.
+* During this mutual exclusion phase, we can exchange the "higher" and "lower" buffer pointers and then coroutines can read from the "lower" buffer and everything they sent before in "higher" shall be transferred to another thread.
 * How much space do we allocate to a coroutine? **It depends how parallel it is.**
-* It handles observers.
-* This is the object hierarchy: we have mailboxes for threads, there are facts and there are coroutine objects.
+* 
+* This is the object hierarchy: we have mailboxes for threads, threads and runqueue.
 * Go language has moveable goroutines but we don't.
 * The only things written to a coroutine's mailbox are events that interest it.
 * A lot of the time, coroutines shall only be on one thread.
@@ -352,6 +358,7 @@ thread-1
 	inbox-3-higher
 	inbox-4-higher
 	inbox-5-higher
+	runqueue
 	coroutine-1
         mailbox-1-lower
         mailbox-2-lower
@@ -409,10 +416,9 @@ thread-5
         mailbox-5-lower
 ```
 
-* Could we assign mailboxes to particular coroutines, for cross thread usage?
-* Could we assign mailboxes to **facts**?
+* The runqueue for a thread is a FIFO queue. But all runqueues for all threads can be thought of as a grid where the leftmost column is executed in lockstep, column by column, left to right.
 
-The runqueue for threads looks like this:
+The runqueue for threads looks like this. I have enqueued 40 tasks, two batches of 20 for 3 threads. Notice the two empty slots of 0 in middle of thread 1 and thread 2, this is required for maintaining synchronization.
 
 ```
 {0: [[1, 4, 7, 10, 13, 16, 19, 1, 4, 7, 10, 13, 16, 19]],
@@ -420,9 +426,9 @@ The runqueue for threads looks like this:
  2: [[3, 6, 9, 12, 15, 18, 0, 3, 6, 9, 12, 15, 18]]}
 ```
 
-Runqueue submission can be an inbox that is processed by a thread as usual.
+Runqueue submission is an event that is sent and processed by a thread as usual. It doesn't need to be thread safe because the mailboxes are thread safe and only a thread enqueues to its own runqueue.
 
-In assembly, our state machine formulation might need to wait until an event fires occurs so that it can continue.
+
 
 
 
@@ -465,6 +471,8 @@ state1 = state2 | state3
 * Movement sequences, permutations are different named states
 
 A fact can be represented by a sequence of numbers
+
+In assembly, our state machine formulation might need to wait until an event fires occurs so that it can continue.
 
 Do we guarantee that after a fire and yield that the event was processed? Callbacks?
 
@@ -1586,6 +1594,32 @@ Facts look like method calls
 
 Auomatically infer monads based on facts ("vary operator")
 
+one of my PL ideas is to just allow direct modification of sequences and infer the monad
+
+Monad applicators, transformers in haskell are just a way of modifying traversal order (control flow) of your code in relation to other functions
+
+```
+sampl edit <type name> 
+```
+
+then a text editor comes up
+it has in it
+
+```
+original-call
+```
+
+and
+you modify it to
+
+```
+begin-span-call
+original-call
+end-span-call
+```
+
+
+
 # 221. Tree of parallel children and message passing
 
 Efficient handover.
@@ -2444,9 +2478,541 @@ when is a buffer not needed anymore?
 
 # 604. Movement patterns
 
+fire in a grid
+
 # 605. Interaction sequences
 
 A file with the merging of two sequences.
+
+# 606. Control flow hash
+
+put a log comment and the log output picks it up
+
+# 607. Barrier star
+
+Low latency replication between pairs. Forking cheaply.
+
+Like a register
+
+```
+a1 -> a2 is fast
+a1 -> b1 is slow
+a2 -> b1 is slow
+```
+
+Map
+
+
+
+```
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+*2
+```
+
+start thread send
+
+```
+[[1, 2], 3, 4, 5, 6, 7, 8, 9 , 10]
+
+```
+
+reduce can happen in the fast pair
+
+# 608. Valuable conventions
+
+# 609. Backward forward reference struct definition format
+
+For thread objects configuration
+
+# 610. Concurrency intermediate representation
+
+# 611. Arbitrary sequence movement
+
+[ a, b , c , d] these things refer to different things, i might want to pop this collection and overlay it to the original
+
+# 612. Layers of intermediate representations
+
+# 613. Mailbox data structure
+
+```
+group-1
+	thread-1
+		task-1
+			mailbox-1-me
+			mailbox-2-friend
+			mailbox-3-external
+		task-2
+			mailbox-1-friend
+			mailbox-2-me
+			mailbox-3-external
+		task-3
+	thread-2
+		task-1
+			mailbox-1-friend
+			mailbox-2-external
+			mailbox-3-external
+		task-2
+		task-3
+group-2
+	thread-3
+		task-1
+			
+		task-2
+		task-3
+	thread-4
+group-3
+	thread-5
+	thread-6
+```
+
+# 614. Physical objects we move around (division etc)
+
+# 615. IR mappings, algebra, variables
+
+# 616. Graph pagination with output format
+
+# 617. Query Intermediate representations
+
+A GUI that you can make IR match, like VIM and query a GUI for file and line number and column efficiently
+
+# 618. Programs are train circuits
+
+movement sequences between states
+
+# 619.  Moving queue FIFO/LIFO semantics and algebra and movement and concurrency and parallelism
+
+# 620. 2 way Ownership
+
+```
+thread-1
+	owns thread-2-mailbox-1
+thread 2
+	owns thread-1-mailbox-2
+```
+
+# 621. Apply mutual exclusion property  to range
+
+intermediate representation for exclusion, locks then postprocessed as train tracks. 
+
+# 622. Rotate to face, match up
+
+channel ends, stacks
+
+# 623. Run in context (in a loop or out of a loop), rotating contexts
+
+# 624. Cache lvalues
+
+# 625. Head toward state space which is your desired scenario
+
+# 626. Assignments of mailboxes, then transformation to swapped mailboxes, index movements	
+
+# 627. Can only be in one position (set) linear types, affine types
+
+# 628. You must put down what you overwrite, three valued assignment
+
+# 629. Swap API
+
+# 630. Movement visualiser
+
+Just set the position of everything and the next position and watch everything swap.
+
+# 631. Problems with the star barrier
+
+In the star barrier, there are two phases: a synchronized phase that only executes in one thread of the group and another phase that every group member executes simultaneously.
+
+The mailbox higher/lower swapper happens in the synchronized phase.
+
+Sending and receiving happens in both phases.
+
+```
+task-1 process messages sent to task-1 and swap
+
+```
+
+
+
+```
+group-1
+	thread-1
+		task-1
+		task-2
+	thread-2
+		task-1
+		task-2
+group-2
+	thread-3
+		task-1
+		task-2
+	thread-4
+		task-1
+		task-2
+```
+
+
+
+
+
+```
+group-1
+	thread-1
+		mailbox-2
+	thread-2
+		mailbox-1
+
+mailbox-2 lower = mailbox-1 higher
+
+```
+
+When my thread wants to exchange with another barrier pair, I am on task "t". The other barrier could be on any 	
+
+# 632. Grow rectangles
+
+Nested rectangles that grow up or down or left or right
+
+# 633. Visit lists
+
+These are a data structure, an intermediate representation for visiting. They can be used for optimisation.
+
+# 634. Behaviour visitation
+
+# 635. TCP/IP functions
+
+# 636. Line up processes/operations and then apply functions across them, allocators, reorderes
+
+processes visitation ordering
+
+you're specifying the state of everything everywhere and the IR optimises it to something efficiently executable.
+
+# 637. This mutual exclusion pattern
+
+
+
+| thread 1 | thread 2 | thread-3 | thread-4 |
+| -------- | -------- | -------- | -------- |
+| x        | x        | x        | x        |
+|          | x        |          |          |
+|          | x        |          |          |
+|          | x        |          |          |
+
+# 638. Layered IR, IR all the way up
+
+# 639. Traversal equivalents
+
+# 640. Server software browser
+
+# 641. The system can be in any state
+
+# 642. Directioned traversal
+
+direction of control flow between threads or machines
+
+understandability and directions, orders, sequences
+
+# 643. Scheduler
+
+different systems do different things
+
+# 644. Relational event time
+
+Join time, represents a divergence.
+
+# 645. Minimum spanning trees of event sequencing
+
+# 646. Stamp programming
+
+the computer can do this much work in a stamp, time epoch.
+
+# 647. Terms allocation, and terms are processes, and states
+
+each variable is a process. this is inspired by types.
+
+
+
+# 648. Community idea: Add behaviour to the stack
+
+# 649. Parsing is dispatch and parsing parallelism
+
+We know the next state based on current state.
+
+```
+init1 | init2 | init3
+one | two | three
+```
+
+Combine operator
+
+# 650. Protocol definition and "this happens there"
+
+# 651. A program that runs to completion, high probability it will work
+
+# 652. Manual memory management is easier without event loops
+
+# 653. Play audio button, play a behaviour
+
+# 654. Implementing a large interface is hard in every language because of invariants
+
+# 655. "Keep this running"
+
+Ask a company to keep this running.
+
+serverless, upload AST of program
+
+# 656. Learn the state machine through events
+
+ # 657. Visitation
+
+# 658. Invertation programs
+
+Write an inefficient base run program and the interacting pieces are inferred and optimised.
+
+# 659. Outside facing programs
+
+If the program works out what IO to do.
+
+They have behaviour.
+
+Behaviour is maintained if all the outside calls work.
+
+# 660. Runtime to static time
+
+Do you what you want inefficiently and it optimises.
+
+# 671. Output data movement positioning
+
+Run a program to generate the new outputs given the inputs. It tracks movements of every piece of data and operations that went against it, a path of its flow. The flow can be optimised.
+
+# 672. Shade security
+
+shading things colouring in
+
+# 673. Event handlers serialised is codegen
+
+# 674. Hyperreactor
+
+# 675. Extract from loop, actor, coroutine or run a loop
+
+Server code that loops over every item or an actor that interacts with the outside world
+
+# 676. Sequence to type monad
+
+call order to type that implements that call order
+
+# 677. AST
+
+# 678. Output tokens
+
+# 679. Session log
+
+# 680. Direction operator
+
+Methods call eachother in either direction
+
+# 681. Arguments are referenceable tables
+
+# 682. Thunks as patches
+
+# 692. Algebraic position language, terms
+
+related to terms are variables, movement between positions, affine, linear
+
+# 693. Event grouping, loop detection between events (sequences +1)
+
+# 693. Generate mailboxes, invariants creation and algebraic assignment
+
+# 694. Slider invariants data structure
+
+joins?
+
+# 695. Parser token causality
+
+printf cause tracking, for recalculation.
+
+# 696. SIMD movement
+
+# 697. Simple language and causality of movement
+
+Like C or python but analysed for change tracking
+
+# 698. Parallel async
+
+```
+any {
+	await something
+	await something2
+	await something3
+}
+```
+
+# 699. State space exploration with multiple processes
+
+Fix it for 2. pairs that depend on different variables.
+
+What are the rules for safety?
+
+```
+thread-1								thread 2
+checking available == 0			checking available == 1
+	write available = 1				write available = 0
+	
+```
+
+or for multiple workers
+
+```
+thread-1							thread-2
+	my.arrived++						my.arrived++
+	if other.arrived == my.arrived:		if other.arrived == my.arrived:
+		do_something						do_something
+```
+
+
+
+# 700. Inferring data schema based on behaviour
+
+# 701. Framed Protocol tokens
+
+```
+http-header
+header
+header
+body
+```
+
+
+
+How do we run "msquic" with the multithreaded barrier?
+
+
+
+A coroutine is asleep while waiting for wakeup.
+
+```
+all_queries = generate_all_queries()
+pageserver.send(all_queries)
+
+pageserver.on "resultset" =>
+
+
+```
+
+Process tree, what take execution context
+
+```
+[_] processes
+	[+] request
+        [+] account-name
+        [+] recent
+        [+] data-view
+        [+] 
+```
+
+A protocol 
+
+A layout inside a container
+
+```
+{
+	
+}
+```
+
+# 702. Event buckets "thunks"
+
+Stateful containers of events
+
+Like tcp connections or processes
+
+types are matched on, a bit like IR
+
+types are system state that is matched on
+
+# 703. Scale to multithread when needed
+
+# 704. Interleaved request-responses for performance
+
+buckets
+
+temporary buckets collects/sampled that are serviced periodically
+
+# 705. ASTs for work
+
+# 706. Control flow is an event sequence and so is the data
+
+# 707. The request budget (100ms) and stamping
+
+# 708. Types of app scaling
+
+# 709. Sorting buckets and scheduling? Optaplanner
+
+# 710. Protocol segmentation
+
+the topology of the protocol defines what can be grouped into a batch for batch processing
+
+concurrency scenarios
+
+causality is maintained even in concurrency
+
+```
+1 -> 2: y
+2 -> 3: x
+3 -> 1: b
+```
+
+
+
+# 711. Memory is a topology, thunk spaces: fixed memory pools
+
+# 712. State machine formulation and Parsing directions
+
+# 713. Complexity is dispatch
+
+# 714. A layer of indirection is enough to dispatch
+
+```
+indirection x y
+```
+
+
+
+# 715. Method call is a fact
+
+# 716. Indexed loops
+
+# 717. Construct data to send from multiple threads
+
+# 718. Barrier can be used for accelerating writes
+
+# 719. Type is control flow path
+
+# 720. Reads are a traversal against all written data
+
+# 721. Relational database used to store JSON keys and reconstructed
+
+# 722. GraphQL is a parser read traversal
+
+# 723. A data structure to define the data structure
+
+```
+
+```
+
+# 724. Loop over a callstack
+
+Create the callstack then loop over it to transform it to how you want it to look.
+
+# 725. Information theoretic
+
+security
+
+# 726. Interpreter semantic discovery through causality
+
+# 727. State machine formulation and APIs
+
+# 728. Situations, runbooks and data loss through server reconnections
+
+# 729. Theory tree and IR
+
+
 
 
 
