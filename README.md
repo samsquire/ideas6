@@ -2990,7 +2990,7 @@ indirection x y
 
 # 722. GraphQL is a parser read traversal
 
-# 723. A data structure to define the data structure
+# 723. A data structure to define the data structure that is event storeable
 
 ```
 
@@ -3006,11 +3006,102 @@ security
 
 # 726. Interpreter semantic discovery through causality
 
-# 727. State machine formulation and APIs
+write inefficient code, get efficient code out
+
+# 727. State machine formulation and generating useful APIs
+
+
 
 # 728. Situations, runbooks and data loss through server reconnections
 
 # 729. Theory tree and IR
+
+# 730. Do I want to build a database?
+
+I want to accelerate writes in memory.
+
+Durable computation, loops etc
+
+# 731. Paginated spreadsheet
+
+# 732. AST business Architecture, business processes easy to change
+
+# 733. Draw lines across code in order
+
+
+
+# 734. Add a constraint on the pile
+
+
+
+# 735. Expertise notation
+
+# 736. Move a calloc inside a method outwards
+
+# 737. Async routing, Lanes that the code can move through in a circuitboard nested box  pattern, memory layout, direction
+
+# 738. There's no such thing as a process, movement through memory
+
+# 739. An API for how things work right now, such as a business
+
+# 740. DirectProblem.com
+
+# 743. Preplan async, btree, parallel walk, CPUs move through things, does it matter to you what order things happen in?
+
+parallel update
+
+parallel IO?
+
+compose an order of things
+
+sheer amount of data
+
+```
+ORDERED RESULTS
+UNORDERED
+```
+
+can parallelism solve the latency problem?
+
+```
+send()
+```
+
+data is memory, but things happening is control flow, IO is control flow
+
+rocks db parallel read
+
+good for mutation
+
+# 744. Binary token protocol with piecetree
+
+Can navigate lots of data this way
+
+btree, lineStarts
+
+# 745. Terms grid
+
+add behaviours to grid items
+
+properties all the way down
+
+# 746. Emit actions behaviours
+
+Everything is a fresh loop for what you want it to be now, everything is a mutation.
+
+total system state modification
+
+efficient movement between states is learned by positioning of the output, through patterns
+
+
+
+
+
+
+
+
+
+
 
 
 
