@@ -3077,7 +3077,7 @@ good for mutation
 
 Can navigate lots of data this way
 
-btree, lineStarts
+btree, lineStarts, piece table
 
 # 745. Terms grid
 
@@ -3085,7 +3085,7 @@ add behaviours to grid items
 
 properties all the way down
 
-# 746. Emit actions behaviours
+# 746. Emit actions behaviours, programming is animation
 
 Everything is a fresh loop for what you want it to be now, everything is a mutation.
 
@@ -3093,6 +3093,142 @@ total system state modification
 
 efficient movement between states is learned by positioning of the output, through patterns
 
+diff two collections
+
+movement
+
+a* between positions
+
+relational diff
+
+# 747. Sorted concentric circles, perspective - sorted from the middle
+
+
+
+# 748. Mover - the thing that moves things between things
+
+# 749. Process package manager
+
+# 750. C struct code generator
+
+# 751. Mental model database
+
+# 752. Rows and columns parallelism, scaling
+
+# 753. Processes in a cluster and algebra, swaps
+
+# 754. Move things into a parameter list, then do the task, like a process
+
+rules and algebra for the parameters and what is in memory
+
+
+
+# 755. You want to change its state or its relation to another thing
+
+# 756. Tree of data caching, cached traversals
+
+# 757. Lifetimes are rectangles
+
+# 758. Efficient insertation into the middle
+
+# 759. Identities and lifetimes, and splitting in the middle (in memory) contiguity
+
+If I have an event loop and I need a place for memory. I have a lifetime problem.  Different sized identities.
+
+Shouldn't be possible to write a program that uses past tokens that are invalid in the future, due to context.
+
+Loops challenge ownership
+
+```
+while (true) {
+
+	buffer = malloc()
+	recv(buffer, 1024)
+	free(buffer)
+}
+```
+
+need to be freed in a different part of the app
+
+is each object in a different state?
+
+object graph, directions
+
+ownership, it's "inside" another data structure
+
+can't drop inner item while there is an outer item referring to it
+
+```
+hashmap:
+  key: value
+```
+
+object pools automatically
+
+```
+hashmap.put(key, pointer)
+
+```
+
+tree of pools, dependencies
+
+hashmap has a pool that can grow,
+
+entrances and exits, compile time determination
+
+whose arena?
+
+arena
+
+where to put the free?
+
+reachability of the state machine
+
+pointer enters the hashmap
+
+```
+loop = accept | add-client | recv | 
+client close = destroy-client
+```
+
+destroy relationship
+
+hashmap links key to pointer
+
+when to destroy pointer and when to destroy key?
+
+structured concurrency?
+
+scope is different to the code method calls
+
+interleaved scopes
+
+hashmap.put(key, pointer) puts pointer in the scope of hashmap's key
+
+```
+imagine you have a server event loop and you allocate memory for a client
+where do you put the free for resources of different lifetimes?
+scopes that interleave the stack, not based on stack
+
+scope1.enter
+client = objectpool.malloc(1024)
+<compiler creates inferred scope2>
+hashmap.put(socket, client)
+# implementation of hashmap has a bind(client, socket) compiler instruction
+<compiler infers scope2 associates hashmap with client with scope1 with socket as the identity>
+
+# client.disconnect
+
+hashmap.destroy(socket)
+<compiler sees scope1 is being destroyed, and socket is linked to client>
+scope1.exit
+inferred scope2.exit
+<the memory of client is freed>
+
+scopes are bound together
+destroying the last reachable scope, destroys both, that's where you put the free
+
+```
 
 
 
@@ -3100,6 +3236,111 @@ efficient movement between states is learned by positioning of the output, throu
 
 
 
+# 760. Order data in order of use, gravity to plan
+
+# 761. Implementing behaviour with events
+
+# 762. Algebra of positions of input to output
+
+# 763. Movement algebra numbers represent positions, you can handle extreme number of requests per second if it's just a movement
+
+It's the end result that matters. Tracking a movement.
+
+# 764. Navigable data structures
+
+# 765. On id generation and shards
+
+# 766. Fixed graph rendering, graph archetypes
+
+# 777. Expansions to bucket of tokens
+
+is a behaviour an expansion to tokens?
+
+expressions are a form of term rewriting
+
+# 778. Traversal struct: Fast multi dimensional middles
+
+* navigating children fast
+* navigating all children fast
+* navigating sequential blocks fast
+* inserting into any position, block sequence efficiently
+
+```
+struct block {
+	
+}
+blockseq block[]
+
+split a sequential block scan
+
+blockseq.children = 55
+use SQL for joins
+btree
+
+
+
+```
+
+
+
+# 779. Sentence upvotes
+
+# 780. Add to a past traversal, on the way
+
+# 781. Actor SQL - join order is a traversal
+
+
+
+can insert events
+
+# 782. The grid is the primitive that behaviours work against: for scheduling
+
+
+
+# 783. REPL recorder
+
+# 793. Control flow graph programming
+
+programming blocks that are larger than method calls but data flow.
+
+match up parameters
+
+# 794. Method calls to events and then schedule
+
+```
+for item in items:
+	item.seek()
+	item.next()
+	
+```
+
+Sliding window scheduling, bucketing and eventing
+
+
+
+# 795. Time and events and buckets
+
+How to model time properly.
+
+# 796. Reorder output events
+
+# 797. Barrier runtime ordering
+
+Commit,
+
+exchange data until all reach the same epoch.
+
+# 797. Mailbox binding
+
+IO thread to worker thread
+
+Even communication from sequent lines of code is a binding of mailboxes.
+
+# 798. Protocols and control flow
+
+# 799. Iteration is a protocol?
+
+# 800. Text replacement term rewriting
 
 
 
