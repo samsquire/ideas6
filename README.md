@@ -3297,6 +3297,7 @@ can insert events
 
 
 
+
 # 783. REPL recorder
 
 # 793. Control flow graph programming
@@ -3342,16 +3343,69 @@ Even communication from sequent lines of code is a binding of mailboxes.
 
 # 800. Text replacement term rewriting
 
+egraphs
+
 # 801. Anything goes reconciliation
 
 What does something mean?
 
+# 802. Movement dashboard
+
+Watch things move around and notice bottlenecks.
+
+# 803. Essence of turing completeness
+
+# 804. Data layout and scans
+
+Place data into place for efficient scanning
+
+# 805. Input journeys
+
+trace of all executed code
+
+# 806. Message topology
+
+joins, message passing
+forks
+
+# 807. How to bucket schedule
+
+The event faucet is fast and comes from multiple threads, how to schedule and fork work evenly across buckets?
+
+# 808. Movement algebra 
+
+Turing machines that are movements instead of stateful.
+
+not getting into strange states
+
+# 809. Relations and control flow
+
+a bunch of data in memory can be changed in states efficiently. its a whole buffer.
+
+grid and control flow
+
+send compute to storage nodes
+
+compute references sent to storage nodes
 
 
+memory ownership
 
+# 810. Apply for me .com
 
+List your skills
 
+# 811. Intermedia equivalincia
 
+mutual recursice notation between people
+
+# 812. Monads and coroutines
+
+# 813. The different apps that are in an operating sysytem are just data structures
+
+# 814. Function and object composer
+
+# 815. Compile SQL query to code
 
 
 
