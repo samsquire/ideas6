@@ -3407,5 +3407,9 @@ mutual recursice notation between people
 
 # 815. Compile SQL query to code
 
+# 816. Layered buckets
 
+Fetching data from file system, sending data over network, computing.
+
+# 817. Everything is async
 
